@@ -228,7 +228,6 @@ M_SOCKET_DECL void IocpService2::Access::Run(IocpService2& service, SocketError&
 		return;
 	}
 
-	coroutine::Coroutine::initEnv();
 	service._mutex.lock();
 	service._implmap[simpl->_handler] = simpl;
 	service._implvector.push_back(simpl);
@@ -284,7 +283,6 @@ M_SOCKET_DECL void IocpService2::Access::Run(IocpService2& service, SocketError&
 	service._implvector.erase(std::find(service._implvector.begin(), service._implvector.end(), simpl));
 	service._implcnt--;
 	service._mutex.unlock();
-	coroutine::Coroutine::close();
 }
 
 M_SOCKET_DECL void IocpService2::Access::Stop(IocpService2& service, SocketError& error){

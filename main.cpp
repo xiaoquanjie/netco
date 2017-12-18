@@ -1,4 +1,5 @@
 #include "netio/netio.hpp"
+#include "coroutine/coroutine.hpp"
 #include <iostream>
 
 using namespace std;
@@ -48,7 +49,21 @@ public:
 	}
 };
 
+struct co_task{
+	void* param;
+	void(*fun)(void*);
+};
+
+void co_func(void* param) {
+
+}
+
 int main() {
+
+	coroutine::Coroutine::initEnv();
+	/*coroutine::Coroutine::initEnv();
+	std::list<int> _list;
+	int id = coroutine::Coroutine::create(co_func,0);*/
 
 	return 0;
 }

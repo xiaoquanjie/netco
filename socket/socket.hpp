@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------
 // Copyright (C) 2017 public
 //
-// author：xiaoquanjie
+// 修改人：xiaoquanjie
 // 时间：2017/8/10
 //
 // 修改人：xiaoquanjie

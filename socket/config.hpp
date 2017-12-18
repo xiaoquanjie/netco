@@ -34,7 +34,6 @@
 #include <stdlib.h>
 
 #ifdef M_PLATFORM_WIN
-#pragma warning (disable:4819)
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <exception>

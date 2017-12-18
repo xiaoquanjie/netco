@@ -164,7 +164,6 @@ struct IocpService2::Impl{
 		HANDLE		 _iocp;
 		socket_t	 _fd;
 		s_uint16_t	 _state;
-		int			 _coid;
 		OperationSet _op;
 		shard_ptr_t<MutexLock> _mutex;
 	};
@@ -177,7 +176,6 @@ struct IocpService2::Impl{
 			_core->_fd = M_INVALID_SOCKET;
 			_core->_iocp = 0;
 			_core->_state = 0;
-			_core->_coid = -1;
 		}
 	}
 
@@ -332,7 +330,6 @@ M_SOCKET_DECL s_int32_t IocpService2::ServiceCount()const{
 }
 
 #include "winsock_init.hpp"
-#include "coroutine/coroutine.hpp"
 #include "iocp_access.hpp"
 M_SOCKET_NAMESPACE_END
 #endif

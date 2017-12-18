@@ -14,7 +14,7 @@
 #ifndef M_NETIO_NETIO_INCLUDE
 #define M_NETIO_NETIO_INCLUDE
 
-#include "config.hpp"
+#include "./config.hpp"
 M_NETIO_NAMESPACE_BEGIN
 
 #ifdef M_PLATFORM_WIN
