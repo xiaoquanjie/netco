@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="coroutine">
+      <UniqueIdentifier>{b08e7257-33e4-4487-a6e5-69220ba331f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="netio">
+      <UniqueIdentifier>{826d295c-c003-4ec1-bff5-b502c9478cde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="socket">
+      <UniqueIdentifier>{ad861d81-cd63-4a6b-8b50-3ed41903672b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="coroutine\co_linux_impl.hpp">
+      <Filter>coroutine</Filter>
+    </ClInclude>
+    <ClInclude Include="coroutine\co_win_impl.hpp">
+      <Filter>coroutine</Filter>
+    </ClInclude>
+    <ClInclude Include="coroutine\config.hpp">
+      <Filter>coroutine</Filter>
+    </ClInclude>
+    <ClInclude Include="coroutine\coroutine.hpp">
+      <Filter>coroutine</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\config.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\hconnector_impl.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\hsocket_impl.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\httpmsg.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\log.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\netio.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\netio_impl.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\tconnector_impl.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\tls.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="netio\tsocket_impl.hpp">
+      <Filter>netio</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\acceptor_service.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\address.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\basic_socket.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\buffer.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\config.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\connector_service.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\endpoint.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\epoll_access.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\error.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\gfunction.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\hdr_helper.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\io_object.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\iocp_access.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\linux_config.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\linux_epoll.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\linuxsock_init.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\lock_dispatcher.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\mutexlock.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\option.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\pro_hdr.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\protocol.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\service.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\slist.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\socket.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\socket_acceptor.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\socket_connector.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\socket_service.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\socket_stream.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\socket_tcp.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\stream_service.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\type.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\util.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\win_access.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\win_config.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\win_iocp.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\win_iocp2.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+    <ClInclude Include="socket\winsock_init.hpp">
+      <Filter>socket</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
