@@ -209,31 +209,40 @@ M_SOCKET_DECL void EpollService::Access::CtlEpoll(EpollService& service, Impl& i
 
 M_SOCKET_DECL void EpollService::Access::ExecOp(IoServiceImpl& serviceimpl
 	, EpollService::OperationSet* opset, epoll_event_t* event){
-	if ((opset->_type & E_ACCEPT_OP)) {
-		opset->_aop._oper->Complete(serviceimpl, event);
+	CoEventTask* task = (CoEventTask*)malloc(sizeof(CoEventTask));
+	task->simpl = &serviceimpl;
+	task->opset = opset;
+	task->event = event;
+	coroutine::CoroutineTask::doTask(ExecOp2, task);
+	free(task);
+}
+
+M_SOCKET_DECL void EpollService::Access::ExecOp2(void* param) {
+	CoEventTask* task = (CoEventTask*)param;
+	if ((task->opset->_type & E_ACCEPT_OP)) {
+		task->opset->_aop._oper->Complete(*(task->simpl), task->event);
 		return;
 	}
-	if (opset->_type & E_CONNECT_OP) {
-		opset->_cop._oper->Complete(serviceimpl, event);
+	if (task->opset->_type & E_CONNECT_OP) {
+		task->opset->_cop._oper->Complete(*(task->simpl), task->event);
 		return;
 	}
 
 	bool flag = false;
-	if (opset->_type & E_READ_OP &&
-		(event->events&M_EPOLLIN || event->events&M_EPOLLERR || event->events&M_EPOLLHUP)){
+	if (task->opset->_type & E_READ_OP &&
+		(task->event->events&M_EPOLLIN 
+			|| task->event->events&M_EPOLLERR 
+			|| task->event->events&M_EPOLLHUP)) {
 		flag = true;
-		opset->_rop._oper->Complete(serviceimpl, event);
+		task->opset->_rop._oper->Complete(*(task->simpl), task->event);
 	}
-	if (opset->_type & E_WRITE_OP &&
-		(event->events&M_EPOLLOUT || event->events&M_EPOLLERR || event->events&M_EPOLLHUP)){
+	if (task->opset->_type & E_WRITE_OP &&
+		(task->event->events&M_EPOLLOUT 
+			|| task->event->events&M_EPOLLERR 
+			|| task->event->events&M_EPOLLHUP)) {
 		flag = true;
-		opset->_wop._oper->Complete(serviceimpl, event);
+		task->opset->_wop._oper->Complete(*(task->simpl), task->event);
 		return;
-	}
-	if (!flag)
-	{
-		//M_DEBUG_PRINT("type: " << opset->_type);
-		//assert(0);
 	}
 }
 
@@ -246,6 +255,7 @@ M_SOCKET_DECL void EpollService::Access::Run(EpollService& service, SocketError&
 		return;
 	}
 
+	coroutine::Coroutine::initEnv();
 	service._mutex.lock();
 	service._implmap[simpl->_handler] = simpl;
 	service._implvector.push_back(simpl);
@@ -282,6 +292,8 @@ M_SOCKET_DECL void EpollService::Access::Run(EpollService& service, SocketError&
 			break;
 	}
 
+	coroutine::CoroutineTask::clrTask();
+	coroutine::Coroutine::close();
 	simpl->_mutex.lock();
 	while (simpl->_closereqs.size()) {
 		ImplCloseReq* req = simpl->_closereqs.front();

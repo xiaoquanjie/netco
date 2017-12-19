@@ -16,6 +16,7 @@
 #define M_WIN_IOCP2_INCLUDE
 
 #include "socket/config.hpp"
+#include "coroutine/coroutine.hpp"
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -223,6 +224,8 @@ public:
 
 	M_SOCKET_DECL static void ExecOp(IocpService2& service, IocpService2::Operation* op, s_uint32_t transbyte, bool ok);
 
+	M_SOCKET_DECL static void ExecOp2(void* param);
+
 	M_SOCKET_DECL static void Run(IocpService2& service, SocketError& error);
 
 	M_SOCKET_DECL static void Stop(IocpService2& service, SocketError& error);
@@ -328,6 +331,13 @@ M_SOCKET_DECL bool IocpService2::Stopped()const{
 M_SOCKET_DECL s_int32_t IocpService2::ServiceCount()const{
 	return Access::GetServiceCount(*this);
 }
+
+struct CoEventTask {
+	IocpService2* service;
+	IocpService2::Operation* op;
+	s_uint32_t tb;
+	bool ok;
+};
 
 #include "socket/winsock_init.hpp"
 #include "socket/iocp_access.hpp"

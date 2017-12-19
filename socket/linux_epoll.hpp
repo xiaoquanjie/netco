@@ -15,6 +15,7 @@
 #define M_LINUX_EPOLL_INCLUDE
 
 #include "socket/config.hpp"
+#include "coroutine/coroutine.hpp"
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -215,6 +216,8 @@ public:
 
 	M_SOCKET_DECL static void ExecOp(IoServiceImpl& serviceimpl, EpollService::OperationSet* op, epoll_event_t* event);
 
+	M_SOCKET_DECL static void ExecOp2(void* param);
+
 	M_SOCKET_DECL static void Run(EpollService& service, SocketError& error);
 
 	M_SOCKET_DECL static void Stop(EpollService& service, SocketError& error);
@@ -324,6 +327,12 @@ M_SOCKET_DECL bool EpollService::Stopped()const{
 M_SOCKET_DECL s_int32_t EpollService::ServiceCount()const{
 	return Access::GetServiceCount(*this);
 }
+
+struct CoEventTask {
+	EpollService::IoServiceImpl* simpl;
+	EpollService::OperationSet* opset;
+	epoll_event_t* event;
+};
 
 #include "socket/linuxsock_init.hpp"
 #include "socket/epoll_access.hpp"

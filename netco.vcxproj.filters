@@ -180,9 +180,15 @@
     <ClInclude Include="coroutine\slist.hpp">
       <Filter>coroutine</Filter>
     </ClInclude>
+    <ClInclude Include="thread.hpp">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="thread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

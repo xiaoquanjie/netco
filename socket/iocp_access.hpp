@@ -211,12 +211,23 @@ M_SOCKET_DECL void IocpService2::Access::BindIocp(IocpService2& service, Impl& i
 }
 
 M_SOCKET_DECL void IocpService2::Access::ExecOp(IocpService2& service, IocpService2::Operation* op, s_uint32_t transbyte, bool ok){
+	CoEventTask* task = (CoEventTask*)malloc(sizeof(CoEventTask));
+	task->service = &service;
+	task->op = op;
+	task->tb = transbyte;
+	task->ok = ok;
+	coroutine::CoroutineTask::doTask(ExecOp2, task);
+	free(task);
+}
+
+M_SOCKET_DECL void IocpService2::Access::ExecOp2(void* param) {
+	CoEventTask* task = (CoEventTask*)param;
 	SocketError error;
-	if (!ok){
+	if (!task->ok) {
 		// op->Internal is not error code
 		M_DEFAULT_SOCKET_ERROR2(error);
 	}
-	op->_oper->Complete(service, transbyte, error);
+	task->op->_oper->Complete(*(task->service), task->tb, error);
 }
 
 M_SOCKET_DECL void IocpService2::Access::Run(IocpService2& service, SocketError& error)
@@ -228,6 +239,7 @@ M_SOCKET_DECL void IocpService2::Access::Run(IocpService2& service, SocketError&
 		return;
 	}
 
+	coroutine::Coroutine::initEnv();
 	service._mutex.lock();
 	service._implmap[simpl->_handler] = simpl;
 	service._implvector.push_back(simpl);
@@ -266,6 +278,8 @@ M_SOCKET_DECL void IocpService2::Access::Run(IocpService2& service, SocketError&
 		}
 	}
 
+	coroutine::CoroutineTask::clrTask();
+	coroutine::Coroutine::close();
 	simpl->_mutex.lock();
 	while (simpl->_closereqs.size()){
 		ImplCloseReq* req = simpl->_closereqs.front();
