@@ -57,7 +57,7 @@ public:
 
 void server() {
 	MyNetIo mynetio;
-	for (int i = 0; i < 1; ++i) {
+	for (int i = 0; i < 32; ++i) {
 		new thread(&MyNetIo::Start, &mynetio, 0);
 	}
 

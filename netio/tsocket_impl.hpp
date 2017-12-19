@@ -162,8 +162,12 @@ bool TcpBaseSocket<T, SocketType>::_TrySendData(bool ignore) {
 		if ((!_writer.msgbuffer || _writer.msgbuffer->Length() == 0)
 			&& _writer.buffer_pool.size() > 0) {
 			SocketLib::Buffer* pbuffer = _writer.buffer_pool.front();
-			if (_writer.msgbuffer)
-				_writer.buffer_pool2.push_back(_writer.msgbuffer);
+			if (_writer.msgbuffer) {
+				if (_writer.buffer_pool2.size() < 10)
+					_writer.buffer_pool2.push_back(_writer.msgbuffer);
+				else
+					delete _writer.msgbuffer;
+			}
 			_writer.msgbuffer = pbuffer;
 			_writer.buffer_pool.pop_front();
 		}
