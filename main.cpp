@@ -49,15 +49,6 @@ public:
 	}
 };
 
-struct co_task{
-	void* param;
-	void(*fun)(void*);
-};
-
-void co_func(void* param) {
-
-}
-
 int main() {
 
 	coroutine::Coroutine::initEnv();

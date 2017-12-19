@@ -177,6 +177,9 @@
     <ClInclude Include="socket\winsock_init.hpp">
       <Filter>socket</Filter>
     </ClInclude>
+    <ClInclude Include="coroutine\slist.hpp">
+      <Filter>coroutine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
