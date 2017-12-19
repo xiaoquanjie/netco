@@ -334,7 +334,6 @@ public:
 
 	void SendHttpMsg() {
 		Send(_httpmsg._pbuffer);
-		_httpmsg._pbuffer = new SocketLib::Buffer;
 		_httpmsg._flag = 0;
 	}
 
