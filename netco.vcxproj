@@ -150,7 +150,6 @@
     <ClInclude Include="coroutine\coroutine.hpp" />
     <ClInclude Include="coroutine\co_linux_impl.hpp" />
     <ClInclude Include="coroutine\co_win_impl.hpp" />
-    <ClInclude Include="coroutine\slist.hpp" />
     <ClInclude Include="netio\config.hpp" />
     <ClInclude Include="netio\hconnector_impl.hpp" />
     <ClInclude Include="netio\hsocket_impl.hpp" />

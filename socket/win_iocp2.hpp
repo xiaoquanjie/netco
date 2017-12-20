@@ -25,6 +25,8 @@ M_SOCKET_NAMESPACE_BEGIN
 
 #define M_IOSERVICE_MUTEX_SIZE 128
 
+struct CoEventTask;
+
 class IocpService2
 {
 public:
@@ -44,6 +46,7 @@ public:
 		MutexLock		_mutex;
 		base::slist<ImplCloseReq*> _closereqs;
 		base::slist<ImplCloseReq*> _closereqs2;
+		base::svector<CoEventTask*> _taskvec;
 	};
 	typedef std::vector<IoServiceImpl*> IoServiceImplVector;
 	typedef std::map<HANDLE, IoServiceImpl*> IoServiceImplMap;
@@ -222,7 +225,7 @@ public:
 
 	M_SOCKET_DECL static void BindIocp(IocpService2& service, Impl& impl, SocketError& error);
 
-	M_SOCKET_DECL static void ExecOp(IocpService2& service, IocpService2::Operation* op, s_uint32_t transbyte, bool ok);
+	M_SOCKET_DECL static void ExecOp(IocpService2& service, IoServiceImpl* simpl, IocpService2::Operation* op, s_uint32_t transbyte, bool ok);
 
 	M_SOCKET_DECL static void ExecOp2(void* param);
 
