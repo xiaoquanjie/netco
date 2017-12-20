@@ -44,7 +44,7 @@ public:
 	}
 	virtual void OnReceiveData(netiolib::HttpSocketPtr clisock, netiolib::HttpSvrRecvMsg& httpmsg) {
 		netiolib::HttpSvrSendMsg& msg = clisock->GetSvrMsg();
-		msg.SetBody("newxiaoquanjie", 14);
+		msg.SetBody("newxiaoquanjie14", 16);
 		clisock->SendHttpMsg();
 	}
 	virtual void OnReceiveData(netiolib::HttpConnectorPtr clisock, netiolib::HttpCliRecvMsg& httpmsg) {

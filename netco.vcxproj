@@ -143,6 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="base\config.hpp" />
+    <ClInclude Include="base\slist.hpp" />
+    <ClInclude Include="base\svector.hpp" />
     <ClInclude Include="coroutine\config.hpp" />
     <ClInclude Include="coroutine\coroutine.hpp" />
     <ClInclude Include="coroutine\co_linux_impl.hpp" />
@@ -180,7 +183,6 @@
     <ClInclude Include="socket\protocol.hpp" />
     <ClInclude Include="socket\pro_hdr.hpp" />
     <ClInclude Include="socket\service.hpp" />
-    <ClInclude Include="socket\slist.hpp" />
     <ClInclude Include="socket\socket.hpp" />
     <ClInclude Include="socket\socket_acceptor.hpp" />
     <ClInclude Include="socket\socket_connector.hpp" />

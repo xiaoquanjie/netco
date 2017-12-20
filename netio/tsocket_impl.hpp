@@ -27,14 +27,14 @@ TcpBaseSocket<T, SocketType>::_writerinfo_::_writerinfo_() {
 template<typename T, typename SocketType>
 TcpBaseSocket<T, SocketType>::_writerinfo_::~_writerinfo_() {
 	SocketLib::Buffer* pbuffer;
-	while (buffer_pool.size()){
+	while (buffer_pool.size()) {
 		pbuffer = buffer_pool.front();
 		buffer_pool.pop_front();
 		delete pbuffer;
 	}
-	while (buffer_pool2.size()){
-		pbuffer = buffer_pool2.front();
-		buffer_pool2.pop_front();
+	while (buffer_pool2.size()) {
+		pbuffer = buffer_pool2.back();
+		buffer_pool2.pop_back();
 		delete pbuffer;
 	}
 	delete msgbuffer;
@@ -95,8 +95,8 @@ void TcpBaseSocket<T, SocketType>::Send(SocketLib::Buffer* buffer) {
 	if (_flag == E_STATE_START) {
 		SocketLib::Buffer* pBuffer;
 		if (_writer.buffer_pool2.size()) {
-			pBuffer = _writer.buffer_pool2.front();
-			_writer.buffer_pool2.pop_front();
+			pBuffer = _writer.buffer_pool2.back();
+			_writer.buffer_pool2.pop_back();
 		}
 		else
 			pBuffer = new SocketLib::Buffer();
@@ -123,8 +123,8 @@ void TcpBaseSocket<T, SocketType>::Send(const SocketLib::s_byte_t* data, SocketL
 
 		SocketLib::Buffer* buffer;
 		if (_writer.buffer_pool2.size()) {
-			buffer = _writer.buffer_pool2.front();
-			_writer.buffer_pool2.pop_front();
+			buffer = _writer.buffer_pool2.back();
+			_writer.buffer_pool2.pop_back();
 		}
 		else
 			buffer = new SocketLib::Buffer();
@@ -153,7 +153,7 @@ void TcpBaseSocket<T, SocketType>::_WriteHandler(SocketLib::s_uint32_t tran_byte
 		_writer.msgbuffer->RemoveData(tran_byte);
 		if (!_TrySendData(true) && !(_flag == E_STATE_START)) {
 			// 数据发送完后，如果状态不是E_TCPSOCKET_STATE_START，则需要关闭写
-			_socket->Shutdown(SocketLib::E_Shutdown_WR,error);
+			_socket->Shutdown(SocketLib::E_Shutdown_WR, error);
 			_Close(E_STATE_WRITE);
 		}
 	}
@@ -172,8 +172,10 @@ bool TcpBaseSocket<T, SocketType>::_TrySendData(bool ignore) {
 			&& _writer.buffer_pool.size() > 0) {
 			SocketLib::Buffer* pbuffer = _writer.buffer_pool.front();
 			if (_writer.msgbuffer) {
-				if (_writer.buffer_pool2.size() < 10)
+				if (_writer.buffer_pool2.size() < 10) {
+					_writer.msgbuffer->Clear();
 					_writer.buffer_pool2.push_back(_writer.msgbuffer);
+				}
 				else
 					delete _writer.msgbuffer;
 			}
@@ -184,7 +186,7 @@ bool TcpBaseSocket<T, SocketType>::_TrySendData(bool ignore) {
 			_writer.writing = true;
 			SocketLib::SocketError error;
 			_socket->AsyncSendSome(bind_t(&TcpBaseSocket::_WriteHandler, this->shared_from_this(), placeholder_1, placeholder_2)
-				, _writer.msgbuffer->Data(), _writer.msgbuffer->Length(),error);
+				, _writer.msgbuffer->Data(), _writer.msgbuffer->Length(), error);
 			if (error)
 				_Close(E_STATE_WRITE);
 			return (!error);
@@ -306,7 +308,7 @@ void TcpStreamSocket<T, SocketType>::_TryRecvData() {
 
 template<typename T, typename SocketType>
 TcpStreamSocket<T, SocketType>::TcpStreamSocket(BaseNetIo<NetIo>& netio)
-	:TcpBaseSocket<T, SocketType>(netio){
+	:TcpBaseSocket<T, SocketType>(netio) {
 }
 
 

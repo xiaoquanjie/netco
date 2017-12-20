@@ -22,6 +22,9 @@
     <Filter Include="socket">
       <UniqueIdentifier>{ad861d81-cd63-4a6b-8b50-3ed41903672b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{20816d7e-5758-4f01-9e08-8b7f249fad90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="coroutine\co_linux_impl.hpp">
@@ -132,9 +135,6 @@
     <ClInclude Include="socket\service.hpp">
       <Filter>socket</Filter>
     </ClInclude>
-    <ClInclude Include="socket\slist.hpp">
-      <Filter>socket</Filter>
-    </ClInclude>
     <ClInclude Include="socket\socket.hpp">
       <Filter>socket</Filter>
     </ClInclude>
@@ -182,6 +182,15 @@
     </ClInclude>
     <ClInclude Include="thread.hpp">
       <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="base\config.hpp">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\slist.hpp">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\svector.hpp">
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
