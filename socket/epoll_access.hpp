@@ -207,14 +207,24 @@ M_SOCKET_DECL void EpollService::Access::CtlEpoll(EpollService& service, Impl& i
 	M_DEFAULT_SOCKET_ERROR(ret != 0, error);
 }
 
-M_SOCKET_DECL void EpollService::Access::ExecOp(IoServiceImpl& serviceimpl
+M_SOCKET_DECL void EpollService::Access::ExecOp(IoServiceImpl& serviceimpl, IoServiceImpl* simpl
 	, EpollService::OperationSet* opset, epoll_event_t* event){
-	CoEventTask* task = (CoEventTask*)malloc(sizeof(CoEventTask));
+	CoEventTask* task = 0;
+	if (simpl->_taskvec.size()) {
+		task = simpl->_taskvec.back();
+		simpl->_taskvec.pop_back();
+	}
+	else {
+		task = (CoEventTask*)malloc(sizeof(CoEventTask));
+	}
 	task->simpl = &serviceimpl;
 	task->opset = opset;
 	task->event = event;
 	coroutine::CoroutineTask::doTask(ExecOp2, task);
-	free(task);
+	if (simpl->_taskvec.size() < 1024)
+		simpl->_taskvec.push_back(task);
+	else
+		free(task);
 }
 
 M_SOCKET_DECL void EpollService::Access::ExecOp2(void* param) {
@@ -286,7 +296,7 @@ M_SOCKET_DECL void EpollService::Access::Run(EpollService& service, SocketError&
 				brk = true;
 			}
 			else
-				ExecOp(*simpl, opset, &events[idx]);
+				ExecOp(*simpl, simpl, opset, &events[idx]);
 		}
 		if (brk)
 			break;

@@ -22,6 +22,8 @@
 #ifndef M_PLATFORM_WIN
 M_SOCKET_NAMESPACE_BEGIN
 
+struct CoEventTask;
+
 class EpollService
 {
 public:
@@ -41,6 +43,7 @@ public:
 		MutexLock	    _mutex;
 		base::slist<ImplCloseReq*> _closereqs;
 		base::slist<ImplCloseReq*> _closereqs2;
+		base::svector<CoEventTask*> _taskvec;
 	};
 	typedef std::vector<IoServiceImpl*> IoServiceImplVector;
 	typedef std::map<s_int32_t, IoServiceImpl*> IoServiceImplMap;
@@ -214,7 +217,7 @@ public:
 
 	M_SOCKET_DECL static void CtlEpoll(EpollService& service, Impl& impl, EpollService::OperationSet* opset, s_int32_t flag, s_int32_t events, SocketError& error);
 
-	M_SOCKET_DECL static void ExecOp(IoServiceImpl& serviceimpl, EpollService::OperationSet* op, epoll_event_t* event);
+	M_SOCKET_DECL static void ExecOp(IoServiceImpl& serviceimpl, IoServiceImpl* simpl, EpollService::OperationSet* op, epoll_event_t* event);
 
 	M_SOCKET_DECL static void ExecOp2(void* param);
 
