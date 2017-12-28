@@ -63,9 +63,6 @@
     <ClInclude Include="netio\tconnector_impl.hpp">
       <Filter>netio</Filter>
     </ClInclude>
-    <ClInclude Include="netio\tls.hpp">
-      <Filter>netio</Filter>
-    </ClInclude>
     <ClInclude Include="netio\tsocket_impl.hpp">
       <Filter>netio</Filter>
     </ClInclude>
@@ -187,6 +184,12 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="base\svector.hpp">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\circular_queue.hpp">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\tls.hpp">
       <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>

@@ -133,6 +133,8 @@ void netlib_http_test() {
 
 int main() {
 
+	// 如果重新唤醒呢？
+
 	//netlib_test();
 	netlib_http_test();
 	return 0;
