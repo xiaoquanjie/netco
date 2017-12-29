@@ -25,6 +25,9 @@
     <Filter Include="base">
       <UniqueIdentifier>{20816d7e-5758-4f01-9e08-8b7f249fad90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="synccall">
+      <UniqueIdentifier>{5725f39a-2cdb-4c77-9fd2-c71e7402c5d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="coroutine\co_linux_impl.hpp">
@@ -174,9 +177,6 @@
     <ClInclude Include="socket\winsock_init.hpp">
       <Filter>socket</Filter>
     </ClInclude>
-    <ClInclude Include="thread.hpp">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="base\config.hpp">
       <Filter>base</Filter>
     </ClInclude>
@@ -192,12 +192,12 @@
     <ClInclude Include="base\tls.hpp">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="base\thread.hpp">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="thread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

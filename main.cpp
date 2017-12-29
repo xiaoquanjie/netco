@@ -1,7 +1,7 @@
 #include "netio/netio.hpp"
 #include "coroutine/coroutine.hpp"
 #include <iostream>
-#include "thread.hpp"
+#include "base/thread.hpp"
 
 using namespace std;
 
@@ -75,10 +75,10 @@ public:
 void server() {
 	MyNetIo mynetio;
 	for (int i = 0; i < 32; ++i) {
-		new thread(&MyNetIo::Start, &mynetio, 0);
+		new base::thread(&MyNetIo::Start, &mynetio, 0);
 	}
 
-	thread::sleep(200);
+	base::thread::sleep(200);
 	if (!mynetio.ListenOne("0.0.0.0", 3001)) {
 		cout << mynetio.GetLastError().What() << endl;
 	}
@@ -106,10 +106,10 @@ void netlib_test() {
 void http_server() {
 	MyNetIo test_io;
 	for (int i = 0; i < 32; ++i) {
-		new thread(&MyNetIo::Start, &test_io, 0);
+		new base::thread(&MyNetIo::Start, &test_io, 0);
 	}
 
-	thread::sleep(200);
+	base::thread::sleep(200);
 	if (!test_io.ListenOneHttp("0.0.0.0", 3002)) {
 		cout << test_io.GetLastError().What() << endl;
 	}
