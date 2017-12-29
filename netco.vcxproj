@@ -198,6 +198,10 @@
     <ClInclude Include="socket\win_config.hpp" />
     <ClInclude Include="socket\win_iocp.hpp" />
     <ClInclude Include="socket\win_iocp2.hpp" />
+    <ClInclude Include="synccall\config.hpp" />
+    <ClInclude Include="synccall\server_handler.hpp" />
+    <ClInclude Include="synccall\synccall_client.hpp" />
+    <ClInclude Include="synccall\synccall_svr.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
