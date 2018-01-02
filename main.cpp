@@ -2,6 +2,7 @@
 #include "coroutine/coroutine.hpp"
 #include <iostream>
 #include "base/thread.hpp"
+#include "synccall/synccall.hpp"
 
 using namespace std;
 
@@ -133,9 +134,9 @@ void netlib_http_test() {
 
 int main() {
 
-	// 如果重新唤醒呢？
+	//synccall::SyncCallSvr::
 
 	//netlib_test();
-	netlib_http_test();
+	//netlib_http_test();
 	return 0;
 }
