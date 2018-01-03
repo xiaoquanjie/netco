@@ -3,6 +3,7 @@
 
 #include "synccall/config.hpp"
 #include "synccall/server_handler.hpp"
+#include "synccall/synccall_client.hpp"
 #include "base/thread.hpp"
 #include <stdlib.h>
 M_SYNCCALL_NAMESPACE_BEGIN
@@ -80,8 +81,15 @@ public:
 		}
 	}
 
-	SyncCallClient* CreateClient() {
-		return 0;
+	SyncCallClient* CreateClient(const std::string& ip,unsigned short port,unsigned int timeout) {
+		SyncCallClient* client = new SyncCallClient;
+		client->_connector.reset(new netiolib::TcpConnector(_io));
+		if (client->_connector->Connect(ip, port, timeout))
+			return client;
+		else {
+			delete client;
+			return 0;
+		}
 	}
 
 	void Start(unsigned int thread_cnt) {
