@@ -99,9 +99,9 @@ public:
 
 protected:
 	void Run(void*) {
-		printf("%d thread is starting..............", base::thread::ctid());
+		printf("%d thread is starting..............\n", base::thread::ctid());
 		_io.Run();
-		printf("%d thread is leaving..............", base::thread::ctid());
+		printf("%d thread is leaving..............\n", base::thread::ctid());
 	}
 
 	void OnConnected(const netiolib::TcpSocketPtr& clisock) {
@@ -125,7 +125,33 @@ protected:
 	void OnReceiveData(const netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer) {
 		base::s_uint64_t* id = (base::s_uint64_t*)clisock->GetSocket().GetData();
 		if (id) {
-			//SvrHandlerMap::iterator iter = 
+			SvrHandlerMap::iterator iter = _svrhandler_map.find(*id);
+			if (iter == _svrhandler_map.end()) {
+				printf("handler is not exist,id(%lld)\n", *id);
+				return;
+			}
+			unsigned int way_type = 0;
+			buffer.Read(way_type);
+			unsigned int msg_type = 0;
+			buffer.Read(msg_type);
+			// don't ask why the way_the is 666 or 999
+			if (way_type == 666) {
+				netiolib::Buffer* reply = new netiolib::Buffer;
+				reply->Write(666);
+				reply->Write(msg_type);
+				iter->second->OnOneWayDealer(msg_type, buffer);
+				clisock->Send(reply);
+			}
+			else if (way_type == 999) {
+				netiolib::Buffer* reply = new netiolib::Buffer;
+				reply->Write(999);
+				reply->Write(msg_type);
+				iter->second->OnTwoWayDealer(msg_type, buffer, *reply);
+				clisock->Send(reply);
+			}
+			else {
+				printf("error way_type(%d)\n", way_type);
+			}
 		}
 	}
 	void OnReceiveData(const netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer) {

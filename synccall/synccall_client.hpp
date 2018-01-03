@@ -8,6 +8,8 @@ class SyncCallClient {
 public:
 	// 0==ok, -1==time out,-2==connect invalid
 	int SyncCall(const int msg_type, const netiolib::Buffer& request, netiolib::Buffer& reply) {
+		
+
 		return 0;
 	}
 
