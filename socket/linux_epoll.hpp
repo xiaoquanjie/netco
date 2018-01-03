@@ -15,14 +15,11 @@
 #define M_LINUX_EPOLL_INCLUDE
 
 #include "socket/config.hpp"
-#include "coroutine/coroutine.hpp"
 #include <map>
 #include <vector>
 #include <algorithm>
 #ifndef M_PLATFORM_WIN
 M_SOCKET_NAMESPACE_BEGIN
-
-struct CoEventTask;
 
 class EpollService
 {
@@ -43,7 +40,6 @@ public:
 		MutexLock	    _mutex;
 		base::slist<ImplCloseReq*> _closereqs;
 		base::slist<ImplCloseReq*> _closereqs2;
-		base::svector<CoEventTask*> _taskvec;
 	};
 	typedef std::vector<IoServiceImpl*> IoServiceImplVector;
 	typedef std::map<s_int32_t, IoServiceImpl*> IoServiceImplMap;
@@ -217,9 +213,7 @@ public:
 
 	M_SOCKET_DECL static void CtlEpoll(EpollService& service, Impl& impl, EpollService::OperationSet* opset, s_int32_t flag, s_int32_t events, SocketError& error);
 
-	M_SOCKET_DECL static void ExecOp(IoServiceImpl& serviceimpl, IoServiceImpl* simpl, EpollService::OperationSet* op, epoll_event_t* event);
-
-	M_SOCKET_DECL static void ExecOp2(void* param);
+	M_SOCKET_DECL static void ExecOp(IoServiceImpl& serviceimpl, EpollService::OperationSet* op, epoll_event_t* event);
 
 	M_SOCKET_DECL static void Run(EpollService& service, SocketError& error);
 
@@ -251,7 +245,7 @@ public:
 		, const M_COMMON_HANDLER_TYPE(IocpService2)& handler, SocketError& error);
 
 	template<typename EndPoint>
-	M_SOCKET_DECL static void Connect(EpollService& service, Impl& impl, const EndPoint& ep, SocketError& error);
+	M_SOCKET_DECL static void Connect(EpollService& service, Impl& impl, const EndPoint& ep, SocketError& error, s_uint32_t timeo_sec);
 
 	template<typename EndPoint>
 	M_SOCKET_DECL static void AsyncConnect(EpollService& service, Impl& impl, const EndPoint& ep
@@ -268,6 +262,9 @@ public:
 
 	M_SOCKET_DECL static void AsyncSendSome(EpollService& service, Impl& impl, const s_byte_t* data, s_uint32_t size
 		, const M_RW_HANDLER_TYPE(EpollService)& hander, SocketError& error);
+
+	// -1 == time out,0 == ok,other == error
+	M_SOCKET_DECL static s_int32_t Select(Impl& impl, bool rd_or_wr, s_uint32_t timeo_sec, SocketError& error);
 
 protected:
 	M_SOCKET_DECL static EpollService::IoServiceImpl* _GetIoServiceImpl(EpollService& service, Impl& impl);
@@ -330,12 +327,6 @@ M_SOCKET_DECL bool EpollService::Stopped()const{
 M_SOCKET_DECL s_int32_t EpollService::ServiceCount()const{
 	return Access::GetServiceCount(*this);
 }
-
-struct CoEventTask {
-	EpollService::IoServiceImpl* simpl;
-	EpollService::OperationSet* opset;
-	epoll_event_t* event;
-};
 
 #include "socket/linuxsock_init.hpp"
 #include "socket/epoll_access.hpp"

@@ -16,7 +16,6 @@
 #define M_WIN_IOCP2_INCLUDE
 
 #include "socket/config.hpp"
-#include "coroutine/coroutine.hpp"
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -24,8 +23,6 @@
 M_SOCKET_NAMESPACE_BEGIN
 
 #define M_IOSERVICE_MUTEX_SIZE 128
-
-struct CoEventTask;
 
 class IocpService2
 {
@@ -46,7 +43,6 @@ public:
 		MutexLock		_mutex;
 		base::slist<ImplCloseReq*> _closereqs;
 		base::slist<ImplCloseReq*> _closereqs2;
-		base::svector<CoEventTask*> _taskvec;
 	};
 	typedef std::vector<IoServiceImpl*> IoServiceImplVector;
 	typedef std::map<HANDLE, IoServiceImpl*> IoServiceImplMap;
@@ -225,9 +221,7 @@ public:
 
 	M_SOCKET_DECL static void BindIocp(IocpService2& service, Impl& impl, SocketError& error);
 
-	M_SOCKET_DECL static void ExecOp(IocpService2& service, IoServiceImpl* simpl, IocpService2::Operation* op, s_uint32_t transbyte, bool ok);
-
-	M_SOCKET_DECL static void ExecOp2(void* param);
+	M_SOCKET_DECL static void ExecOp(IocpService2& service, IocpService2::Operation* op, s_uint32_t transbyte, bool ok);
 
 	M_SOCKET_DECL static void Run(IocpService2& service, SocketError& error);
 
@@ -257,7 +251,7 @@ public:
 		, const M_COMMON_HANDLER_TYPE(IocpService2)& handler, SocketError& error);
 	
 	template<typename EndPoint>
-	M_SOCKET_DECL static void Connect(IocpService2& service, Impl& impl, const EndPoint& ep, SocketError& error);
+	M_SOCKET_DECL static void Connect(IocpService2& service, Impl& impl, const EndPoint& ep, SocketError& error, s_uint32_t timeo_sec);
 	
 	template<typename EndPoint>
 	M_SOCKET_DECL static void AsyncConnect(IocpService2& service, Impl& impl, const EndPoint& ep
@@ -272,6 +266,9 @@ public:
 	
 	M_SOCKET_DECL static void AsyncSendSome(IocpService2& service, Impl& impl, const s_byte_t* data, s_uint32_t size
 		, const M_RW_HANDLER_TYPE(IocpService2)& hander, SocketError& error);
+
+	// -1 == time out,0 == ok,other == error
+	M_SOCKET_DECL static s_int32_t Select(Impl& impl, bool rd_or_wr, s_uint32_t timeo_sec, SocketError& error);
 
 protected:
 	M_SOCKET_DECL static void _DoClose(IocpService2::IoServiceImpl* simpl
@@ -334,13 +331,6 @@ M_SOCKET_DECL bool IocpService2::Stopped()const{
 M_SOCKET_DECL s_int32_t IocpService2::ServiceCount()const{
 	return Access::GetServiceCount(*this);
 }
-
-struct CoEventTask {
-	IocpService2* service;
-	IocpService2::Operation* op;
-	s_uint32_t tb;
-	bool ok;
-};
 
 #include "socket/winsock_init.hpp"
 #include "socket/iocp_access.hpp"
