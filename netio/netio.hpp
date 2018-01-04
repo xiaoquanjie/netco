@@ -168,6 +168,8 @@ public:
 
 	void Send(const SocketLib::s_byte_t* data, SocketLib::s_uint32_t len);
 
+	bool IsConnected()const;
+
 protected:
 	void _WriteHandler(SocketLib::s_uint32_t tran_byte, SocketLib::SocketError error);
 
@@ -259,9 +261,9 @@ public:
 
 	SocketLib::TcpConnector<SocketLib::IoService>& GetSocket();
 
-	bool Connect(const SocketLib::Tcp::EndPoint& ep);
+	bool Connect(const SocketLib::Tcp::EndPoint& ep, SocketLib::s_uint32_t timeo_sec = -1);
 
-	bool Connect(const std::string& addr, SocketLib::s_uint16_t port);
+	bool Connect(const std::string& addr, SocketLib::s_uint16_t port, SocketLib::s_uint32_t timeo_sec = -1);
 
 	void AsyncConnect(const SocketLib::Tcp::EndPoint& ep);
 

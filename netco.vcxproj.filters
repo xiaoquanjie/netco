@@ -195,6 +195,21 @@
     <ClInclude Include="base\thread.hpp">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="synccall\config.hpp">
+      <Filter>synccall</Filter>
+    </ClInclude>
+    <ClInclude Include="synccall\server_handler.hpp">
+      <Filter>synccall</Filter>
+    </ClInclude>
+    <ClInclude Include="synccall\synccall.hpp">
+      <Filter>synccall</Filter>
+    </ClInclude>
+    <ClInclude Include="synccall\synccall_client.hpp">
+      <Filter>synccall</Filter>
+    </ClInclude>
+    <ClInclude Include="synccall\synccall_svr.hpp">
+      <Filter>synccall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
