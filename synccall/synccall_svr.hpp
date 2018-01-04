@@ -71,8 +71,7 @@ public:
 
 	bool RegisterHandler(const std::string& ip, unsigned short port, IServerHandler* handler) {
 		if (_io.ListenOne(ip, port)) {
-			base::s_uint32_t int_ip = inet_addr(ip.c_str());
-			base::s_uint64_t id = (((base::s_uint64_t)int_ip) << 17) + port;
+			base::s_uint64_t id = UniqueId(ip, port);
 			_svrhandler_map[id] = handler;
 			return true;
 		}
@@ -83,6 +82,10 @@ public:
 
 	SyncCallClient* CreateClient(const std::string& ip,unsigned short port,unsigned int timeout) {
 		SyncCallClient* client = new SyncCallClient;
+		client->_ip = ip;
+		client->_port = port;
+		client->_timeo = timeout;
+		client->_io = &_io;
 		client->_connector.reset(new netiolib::TcpConnector(_io));
 		if (client->_connector->Connect(ip, port, timeout))
 			return client;
@@ -115,12 +118,12 @@ protected:
 	void OnConnected(const netiolib::TcpSocketPtr& clisock) {
 		std::string ip = clisock->LocalEndpoint().Address();
 		base::s_uint16_t port = clisock->LocalEndpoint().Port();
-		base::s_uint32_t int_ip = inet_addr(ip.c_str());
 		base::s_uint64_t* id = new base::s_uint64_t;
-		*id = (((base::s_uint64_t)int_ip) << 17) + port;
+		*id = UniqueId(ip, port);
 		clisock->GetSocket().SetData(id);
 	}
 	void OnConnected(const netiolib::TcpConnectorPtr& clisock, SocketLib::SocketError error) {
+		
 	}
 
 	void OnDisconnected(const netiolib::TcpSocketPtr& clisock) {
@@ -142,18 +145,22 @@ protected:
 			buffer.Read(way_type);
 			unsigned int msg_type = 0;
 			buffer.Read(msg_type);
+			unsigned int pack_idx = 0;
+			buffer.Read(pack_idx);
 			// don't ask why the way_the is 666 or 999
 			if (way_type == 666) {
 				netiolib::Buffer* reply = new netiolib::Buffer;
-				reply->Write(666);
+				reply->Write(way_type);
 				reply->Write(msg_type);
+				reply->Write(pack_idx);
 				iter->second->OnOneWayDealer(msg_type, buffer);
 				clisock->Send(reply);
 			}
 			else if (way_type == 999) {
 				netiolib::Buffer* reply = new netiolib::Buffer;
-				reply->Write(999);
+				reply->Write(way_type);
 				reply->Write(msg_type);
+				reply->Write(pack_idx);
 				iter->second->OnTwoWayDealer(msg_type, buffer, *reply);
 				clisock->Send(reply);
 			}
@@ -163,6 +170,13 @@ protected:
 		}
 	}
 	void OnReceiveData(const netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer) {
+		
+	}
+
+	base::s_uint64_t UniqueId(const std::string& ip, unsigned short port) {
+		base::s_uint32_t int_ip = inet_addr(ip.c_str());
+		base::s_uint64_t id = (((base::s_uint64_t)int_ip) << 17) + port;
+		return id;
 	}
 
 private:
