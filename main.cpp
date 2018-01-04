@@ -2,6 +2,7 @@
 #include "coroutine/coroutine.hpp"
 #include <iostream>
 #include "base/thread.hpp"
+#include "synccall/synccall.hpp"
 
 using namespace std;
 
@@ -52,7 +53,7 @@ public:
 	virtual void OnReceiveData(const netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer) {
 	}
 	virtual void OnReceiveData(const netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer) {
-		
+
 	}
 	virtual void OnReceiveData(netiolib::HttpSocketPtr clisock, netiolib::HttpSvrRecvMsg& httpmsg) {
 		//cout << httpmsg.GetRequestLine() << endl;
@@ -127,15 +128,15 @@ void netlib_http_test() {
 	cin >> i;
 	if (i == 1)
 		http_server();
-	
+
 }
 
 
 int main() {
 
-	// 如果重新唤醒呢？
+	//synccall::SyncCallSvr::
 
 	//netlib_test();
-	netlib_http_test();
+	//netlib_http_test();
 	return 0;
 }
