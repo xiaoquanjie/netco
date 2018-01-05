@@ -14,4 +14,16 @@
 // for debug
 //#define M_OPEN_DEBUG_LOG 1
 
+M_SYNCCALL_NAMESPACE_BEGIN
+struct _ScInfo_ {
+	base::s_uint16_t id;
+	netiolib::Buffer buffer;
+};
+struct _CoScInfo_ {
+	base::s_uint32_t co_id;
+	SocketLib::SocketError error;
+	netiolib::Buffer buffer;
+};
+M_SYNCCALL_NAMESPACE_END
+
 #endif

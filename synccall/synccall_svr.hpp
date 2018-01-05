@@ -15,6 +15,7 @@ M_SYNCCALL_NAMESPACE_BEGIN
 #endif
 
 class ScClient;
+class CoScClient;
 class ScServer;
 
 struct IScServer {
@@ -70,14 +71,10 @@ inline void ScIo::OnReceiveData(netiolib::TcpConnectorPtr& clisock, netiolib::Bu
 class ScServer : public IScServer {
 	friend class ScIo;
 public:
-	struct scinfo {
-		base::s_uint16_t id;
-		netiolib::Buffer buffer;
-	};
-
 	ScServer();
 	~ScServer();
 	bool RegisterHandler(const std::string& ip, unsigned short port, IServerHandler* handler);
+	CoScClient* CreateCoScClient();
 	void Start(unsigned int thread_cnt);
 	void Stop();
 
@@ -126,6 +123,12 @@ inline bool ScServer::RegisterHandler(const std::string& ip, unsigned short port
 	}
 }
 
+inline CoScClient* ScServer::CreateCoScClient() {
+	CoScClient* client = new CoScClient;
+	client->_io = &_io;
+	return client;
+}
+
 inline void ScServer::Start(unsigned int thread_cnt) {
 	if (_threads.empty()) {
 		for (unsigned int idx = 0; idx < thread_cnt; ++idx) {
@@ -151,7 +154,7 @@ inline void ScServer::OnConnected(netiolib::TcpSocketPtr& clisock) {
 	M_PRINT_DEBUG_LOG("onconnected......\n");
 	std::string ip = clisock->LocalEndpoint().Address();
 	base::s_uint16_t port = clisock->LocalEndpoint().Port();
-	scinfo* pscinfo = new scinfo;
+	_ScInfo_* pscinfo = new _ScInfo_;
 	pscinfo->id = UniqueId(ip, port);
 	clisock->GetSocket().SetData(pscinfo);
 }
@@ -160,15 +163,21 @@ inline void ScServer::OnConnected(netiolib::TcpConnectorPtr& clisock, SocketLib:
 
 inline void ScServer::OnDisconnected(netiolib::TcpSocketPtr& clisock) {
 	M_PRINT_DEBUG_LOG("ondisconnected......\n");
-	scinfo* pscinfo = (scinfo*)clisock->GetSocket().GetData();
+	_ScInfo_* pscinfo = (_ScInfo_*)clisock->GetSocket().GetData();
 	delete pscinfo;
 }
 inline void ScServer::OnDisconnected(netiolib::TcpConnectorPtr& clisock) {
+	_CoScInfo_* info = (_CoScInfo_*)clisock->GetSocket().GetData();
+	if (info) {
+		info->buffer.Clear();
+		coroutine::Coroutine::resume(info->co_id);
+		delete info;
+	}
 }
 
 inline void ScServer::OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer) {
 	M_PRINT_DEBUG_LOG("onreceivedata......\n");
-	scinfo* pscinfo = (scinfo*)clisock->GetSocket().GetData();
+	_ScInfo_* pscinfo = (_ScInfo_*)clisock->GetSocket().GetData();
 	if (!pscinfo) {
 		printf("pscinfo is null\n");
 		return;
@@ -199,6 +208,12 @@ inline void ScServer::OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::B
 	}
 }
 inline void ScServer::OnReceiveData(netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer) {
+	_CoScInfo_* info = (_CoScInfo_*)clisock->GetSocket().GetData();
+	if (info) {
+		info->buffer.Clear();
+		info->buffer.Swap(buffer);
+		coroutine::Coroutine::resume(info->co_id);
+	}
 }
 
 inline base::s_uint16_t ScServer::UniqueId(const std::string& ip, unsigned short port) {
