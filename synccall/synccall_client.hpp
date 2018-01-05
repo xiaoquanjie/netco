@@ -186,7 +186,7 @@ private:
 	unsigned int _timeo;
 	unsigned int _packidx;
 	netiolib::Buffer _request;
-	netiolib::TcpConnector* _socket;
+	netiolib::TcpConnectorPtr _socket;
 	ScIo* _io;
 };
 
@@ -200,7 +200,6 @@ inline CoScClient::CoScClient() {
 
 inline CoScClient::~CoScClient() {
 	Close();
-	delete _socket;
 }
 
 inline bool CoScClient::Connect(const std::string& ip, unsigned short port, unsigned int timeout) {
@@ -231,28 +230,26 @@ inline int CoScClient::SyncCall(int msg_type, const char* msg, SocketLib::s_uint
 	}
 	_FillRequest(M_ONEWAY_TYPE, msg_type, msg, len);
 	_socket->Send(_request.Data(), _request.Length());
-	coroutine::Coroutine::yield();
 	_CoScInfo_* info = (_CoScInfo_*)_socket->GetSocket().GetData();
+	if (!info) {
+		Close();
+		return -3;
+	}
+	info->co_id = coroutine::Coroutine::curid();
+	coroutine::Coroutine::yield();
 	if (!info 
 		|| info->error
 		|| info->buffer.Length()==0) {
 		Close();
 		return -3;
 	}
-	 
-
-	//if (!_socket->Send(_request.Data(), _request.Length())) {
-	//	Close();
-	//	return -3;
-	//}
-	////SocketLib::Buffer* reply = _socket->Recv();
-	//if (_CheckReply(reply)) {
-	//	return 0; // ok
-	//}
-	//else {
-	//	Close();
-	//	return -3;
-	//}
+	if (_CheckReply(&info->buffer)) {
+		return 0; // ok
+	}
+	else {
+		Close();
+		return -3;
+	}
 }
 
 inline bool CoScClient::IsConnected()const {
@@ -268,8 +265,7 @@ inline void CoScClient::Close() {
 }
 
 inline bool CoScClient::_Reconnect() {
-	delete _socket;
-	_socket = new netiolib::TcpConnector((netiolib::NetIo&)*_io);
+	_socket.reset(new netiolib::TcpConnector((netiolib::NetIo&)*_io));
 	if (_socket->Connect(_ip, _port, _timeo)) {
 		_CoScInfo_* info = new _CoScInfo_;
 		info->co_id = -1;
