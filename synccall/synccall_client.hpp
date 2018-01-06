@@ -194,7 +194,6 @@ inline CoScClient::CoScClient() {
 	_port = 0;
 	_timeo = -1;
 	_packidx = 0;
-	_socket = 0;
 	_io = 0;
 }
 
