@@ -122,6 +122,8 @@ inline bool SyncTcpConnector::Connect(const SocketLib::Tcp::EndPoint& ep, Socket
 	try {
 		this->_socket->Connect(ep, timeo_sec);
 		_flag = E_STATE_START;
+		this->_remoteep = this->_socket->RemoteEndPoint();
+		this->_localep = this->_socket->LocalEndPoint();
 		return true;
 	}
 	catch (SocketLib::SocketError&) {

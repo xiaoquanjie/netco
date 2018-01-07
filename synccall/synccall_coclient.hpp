@@ -129,6 +129,7 @@ inline bool CoScClient::IsConnected()const {
 
 inline void CoScClient::Close() {
 	if (_socket) {
+		_socket->Close();
 		_socket.reset();
 	}
 }
