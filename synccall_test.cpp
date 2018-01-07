@@ -1,4 +1,7 @@
 #include "synccall/synccall.hpp"
+#include <iostream>
+
+using namespace std;
 
 struct CDisplayTime
 {
@@ -14,35 +17,45 @@ struct CDisplayTime
 		}
 	}
 };
-
-
 #define M_DISPLAYTIME() CDisplayTime loDisTime_##__LINE__(__FUNCTION__);
 
+synccall::ScServer server;
 
 class RpcHandler : public synccall::IServerHandler {
 public:
 	virtual void OnOneWayDealer(const int msg_type, netiolib::Buffer& request) {
 		std::cout << "error" << std::endl;
-
 	}
 	virtual void OnTwoWayDealer(const int msg_type, netiolib::Buffer& request, netiolib::Buffer& reply) {
 		if (msg_type == 1) {
 			int i = 0;
 			request.Read(i);
-			//std::cout << i << std::endl;
-			//std::cout << "client request:" << info << std::endl;
-			//info = "server knows " + info;
 			reply.Write(i);
+		}
+		else if (msg_type == 2) {
+			std::string name = "null";
+			synccall::CoScClient* client = server.CreateCoScClient();
+			if (client->Connect("127.0.0.1", 6001,1)) {
+				netiolib::Buffer* reply = 0;
+				int ret = client->SyncCall(1, 0, 0, reply);
+				if (ret == 0) {
+					reply->Read(name);
+				}
+			}
+			delete client;
+			reply.Write(name);
 		}
 		else {
 			std::cout << "error msg_type=" << msg_type << std::endl;
 		}
 	}
+
+protected:
+
 };
 
 void synccall_server(){
-	synccall::ScServer server;
-	server.Start(4);
+	server.Start(1);
 	server.RegisterHandler("0.0.0.0", 4001, new RpcHandler);
 	int i = 0;
 	std::cin >> i;
@@ -100,3 +113,26 @@ void synccall_client() {
 	std::cin >> i;
 }
 
+void synccall_client_getname() {
+	std::string ip;
+	std::cout << "input ip:";
+	std::cin >> ip;
+
+	synccall::ScClient client;
+	if (!client.Connect(ip, 4001, -1)) {
+		std::cout << "connect fail" << std::endl;
+		return;
+	}
+	std::cout << "connect success" << std::endl;
+
+	SocketLib::Buffer* reply;
+	int ret = client.SyncCall(2, 0, 0, reply);
+	if (ret != 0) {
+		std::cout << "happend error" << std::endl;
+	}
+	else {
+		std::string name;
+		reply->Read(name);
+		cout << "name:" << name << endl;
+	}
+}

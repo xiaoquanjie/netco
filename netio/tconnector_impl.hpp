@@ -31,6 +31,13 @@ template<typename ConnectorType>
 bool BaseTcpConnector<ConnectorType>::Connect(const SocketLib::Tcp::EndPoint& ep, SocketLib::s_uint32_t timeo_sec) {
 	try {
 		this->_socket->Connect(ep,timeo_sec);
+		this->_flag = E_STATE_START;
+		this->_remoteep = this->_socket->RemoteEndPoint();
+		this->_localep = this->_socket->LocalEndPoint();
+		shard_ptr_t<ConnectorType> ref = this->shared_from_this();
+		function_t<void(SocketLib::s_uint32_t, SocketLib::SocketError)> handler =
+			bind_t(&BaseTcpConnector<ConnectorType>::_ReadHandler, ref, placeholder_1, placeholder_2);
+		this->_socket->AsyncRecvSome(handler, this->_reader.readbuf, M_READ_SIZE);
 		return true;
 	}
 	catch (SocketLib::SocketError& error) {

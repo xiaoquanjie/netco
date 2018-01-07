@@ -18,10 +18,14 @@ void synccall_test() {
 		synccall_client();
 }
 
+void synccall_name_server();
+void synccall_client_getname();
+
 int main() {
 
+	//synccall_name_server();
+	//synccall_client_getname();
 	synccall_test();
-
 	int pause_i;
 	cin >> pause_i;
 	return 0;

@@ -265,6 +265,7 @@ inline void EpollService::Access::Run(EpollService& service, SocketError& error)
 	epoll_event_t events[max_events];
 	for (;;) {
 		_DoClose(&simpl, closes1, closes2);
+		coroutine::CoroutineTask::doThrResume();
 		g_setlasterr(0);
 		g_bzero(&events, sizeof(events));
 		s_int32_t ret = g_epoll_wait(simpl._handler, events, max_events, 500);

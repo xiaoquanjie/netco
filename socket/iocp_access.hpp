@@ -251,6 +251,7 @@ inline void IocpService::Access::Run(IocpService& service, SocketError& error) {
 	overlapped_t* overlapped = 0;
 	for (;;) {
 		_DoClose(&simpl, closes1, closes2);
+		coroutine::CoroutineTask::doThrResume();
 		trans_bytes = 0;
 		comple_key = 0;
 		overlapped = 0;

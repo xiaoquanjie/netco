@@ -74,7 +74,7 @@ inline int CoScClient::SyncCall(int msg_type, const char* msg, SocketLib::s_uint
 			_socket->thr_id = base::thread::ctid();
 			_socket->co_id = coroutine::Coroutine::curid();
 			_socket->_mutex.unlock();
-			_FillRequest(M_ONEWAY_TYPE, msg_type, msg, len);
+			_FillRequest(M_TWOWAY_TYPE, msg_type, msg, len);
 			_socket->Send(_request.Data(), _request.Length());
 			coroutine::Coroutine::yield();
 			do {
