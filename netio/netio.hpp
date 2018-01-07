@@ -39,6 +39,7 @@ class TcpConnector;
 class HttpSocket;
 class HttpConnector;
 class SyncTcpConnector;
+class ScConnector;
 
 typedef SocketLib::Buffer Buffer;
 typedef shard_ptr_t<SocketLib::Buffer> BufferPtr;
@@ -48,6 +49,7 @@ typedef shard_ptr_t<HttpSocket>		   HttpSocketPtr;
 typedef shard_ptr_t<HttpConnector>	   HttpConnectorPtr;
 typedef shard_ptr_t<SocketLib::TcpAcceptor<SocketLib::IoService> > NetIoTcpAcceptorPtr;
 typedef shard_ptr_t<SyncTcpConnector>  SyncTcpConnectorPtr;
+typedef shard_ptr_t<ScConnector> ScConnectorPtr;
 
 #define lasterror base::tlsdata<SocketLib::SocketError,0>::data()
 
@@ -94,19 +96,21 @@ public:
 	virtual void OnConnected(TcpConnectorPtr& clisock, SocketLib::SocketError error);
 	virtual void OnConnected(HttpSocketPtr& clisock);
 	virtual void OnConnected(HttpConnectorPtr& clisock, SocketLib::SocketError error);
+	virtual void OnConnected(ScConnectorPtr& clisock, SocketLib::SocketError error);
 
 	// 掉线通知,这个函数里不要处理业务，防止堵塞
 	virtual void OnDisconnected(TcpSocketPtr& clisock);
 	virtual void OnDisconnected(TcpConnectorPtr& clisock);
 	virtual void OnDisconnected(HttpSocketPtr& clisock);
 	virtual void OnDisconnected(HttpConnectorPtr& clisock);
+	virtual void OnDisconnected(ScConnectorPtr& clisock);
 
 	// 数据包通知,这个函数里不要处理业务，防止堵塞
 	virtual void OnReceiveData(TcpSocketPtr& clisock, SocketLib::Buffer& buffer);
 	virtual void OnReceiveData(TcpConnectorPtr& clisock, SocketLib::Buffer& buffer);
 	virtual void OnReceiveData(HttpSocketPtr& clisock, HttpSvrRecvMsg& httpmsg);
 	virtual void OnReceiveData(HttpConnectorPtr& clisock, HttpCliRecvMsg& httpmsg);
-
+	virtual void OnReceiveData(ScConnectorPtr& clisock, SocketLib::Buffer& buffer);
 
 protected:
 	void _AcceptHandler(SocketLib::SocketError error, TcpSocketPtr& clisock, NetIoTcpAcceptorPtr& acceptor);
@@ -291,6 +295,22 @@ public:
 	TcpConnector(BaseNetIo<NetIo>& netio)
 		:BaseTcpConnector(netio) {
 	}
+};
+
+class ScConnector : public BaseTcpConnector<ScConnector>
+{
+public:
+	ScConnector(BaseNetIo<NetIo>& netio)
+		:BaseTcpConnector(netio) {
+		thr_id = 0;
+		co_id = -1;
+		valid = false;
+	}
+	bool valid;
+	base::s_uint32_t thr_id;
+	base::s_uint32_t co_id;
+	netiolib::Buffer buffer;
+	SocketLib::MutexLock _mutex;
 };
 
 // for http

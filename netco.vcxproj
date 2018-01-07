@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="base\circular_queue.hpp" />
     <ClInclude Include="base\config.hpp" />
+    <ClInclude Include="base\mutexlock.hpp" />
     <ClInclude Include="base\slist.hpp" />
     <ClInclude Include="base\svector.hpp" />
     <ClInclude Include="base\thread.hpp" />
@@ -179,7 +180,6 @@
     <ClInclude Include="socket\linux_config.hpp" />
     <ClInclude Include="socket\linux_epoll.hpp" />
     <ClInclude Include="socket\lock_dispatcher.hpp" />
-    <ClInclude Include="socket\mutexlock.hpp" />
     <ClInclude Include="socket\option.hpp" />
     <ClInclude Include="socket\protocol.hpp" />
     <ClInclude Include="socket\pro_hdr.hpp" />
@@ -200,6 +200,7 @@
     <ClInclude Include="synccall\server_handler.hpp" />
     <ClInclude Include="synccall\synccall.hpp" />
     <ClInclude Include="synccall\synccall_client.hpp" />
+    <ClInclude Include="synccall\synccall_coclient.hpp" />
     <ClInclude Include="synccall\synccall_svr.hpp" />
   </ItemGroup>
   <ItemGroup>

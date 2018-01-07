@@ -120,9 +120,6 @@
     <ClInclude Include="socket\lock_dispatcher.hpp">
       <Filter>socket</Filter>
     </ClInclude>
-    <ClInclude Include="socket\mutexlock.hpp">
-      <Filter>socket</Filter>
-    </ClInclude>
     <ClInclude Include="socket\option.hpp">
       <Filter>socket</Filter>
     </ClInclude>
@@ -202,6 +199,12 @@
       <Filter>synccall</Filter>
     </ClInclude>
     <ClInclude Include="synccall\synccall_svr.hpp">
+      <Filter>synccall</Filter>
+    </ClInclude>
+    <ClInclude Include="base\mutexlock.hpp">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="synccall\synccall_coclient.hpp">
       <Filter>synccall</Filter>
     </ClInclude>
   </ItemGroup>

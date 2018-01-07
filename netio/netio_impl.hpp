@@ -201,7 +201,9 @@ void BaseNetIo<NetIoType>::OnConnected(HttpSocketPtr& clisock) {
 template<typename NetIoType>
 void BaseNetIo<NetIoType>::OnConnected(HttpConnectorPtr& clisock, SocketLib::SocketError error) {
 }
-
+template<typename NetIoType>
+void BaseNetIo<NetIoType>::OnConnected(ScConnectorPtr& clisock, SocketLib::SocketError error) {
+}
 
 // 掉线通知,这个函数里不要处理业务，防止堵塞
 template<typename NetIoType>
@@ -216,6 +218,9 @@ void BaseNetIo<NetIoType>::OnDisconnected(HttpSocketPtr& clisock) {
 template<typename NetIoType>
 void BaseNetIo<NetIoType>::OnDisconnected(HttpConnectorPtr& clisock) {
 }
+template<typename NetIoType>
+void BaseNetIo<NetIoType>::OnDisconnected(ScConnectorPtr& clisock) {
+}
 
 // 数据包通知,这个函数里不要处理业务，防止堵塞
 template<typename NetIoType>
@@ -229,6 +234,9 @@ void BaseNetIo<NetIoType>::OnReceiveData(HttpSocketPtr& clisock, HttpSvrRecvMsg&
 }
 template<typename NetIoType>
 void BaseNetIo<NetIoType>::OnReceiveData(HttpConnectorPtr& clisock, HttpCliRecvMsg& httpmsg) {
+}
+template<typename NetIoType>
+void BaseNetIo<NetIoType>::OnReceiveData(ScConnectorPtr& clisock, SocketLib::Buffer& buffer) {
 }
 
 M_NETIO_NAMESPACE_END

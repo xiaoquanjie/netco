@@ -3,7 +3,7 @@
 
 #include "synccall/config.hpp"
 #include "synccall/server_handler.hpp"
-#include "synccall/synccall_client.hpp"
+#include "synccall/synccall_coclient.hpp"
 #include "base/thread.hpp"
 #include <stdlib.h>
 M_SYNCCALL_NAMESPACE_BEGIN
@@ -22,11 +22,10 @@ struct IScServer {
 	friend class ScIo;
 protected:
 	virtual void OnConnected(netiolib::TcpSocketPtr& clisock) = 0;
-	virtual void OnConnected(netiolib::TcpConnectorPtr& clisock, SocketLib::SocketError error) = 0;
 	virtual void OnDisconnected(netiolib::TcpSocketPtr& clisock) = 0;
-	virtual void OnDisconnected(netiolib::TcpConnectorPtr& clisock) = 0;
+	virtual void OnDisconnected(netiolib::ScConnectorPtr& clisock) = 0;
 	virtual void OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer) = 0;
-	virtual void OnReceiveData(netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer) = 0;
+	virtual void OnReceiveData(netiolib::ScConnectorPtr& clisock, netiolib::Buffer& buffer) = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,11 +37,10 @@ public:
 	}
 protected:
 	virtual void OnConnected(netiolib::TcpSocketPtr& clisock);
-	virtual void OnConnected(netiolib::TcpConnectorPtr& clisock, SocketLib::SocketError error);
 	virtual void OnDisconnected(netiolib::TcpSocketPtr& clisock);
-	virtual void OnDisconnected(netiolib::TcpConnectorPtr& clisock);
+	virtual void OnDisconnected(netiolib::ScConnectorPtr& clisock);
 	virtual void OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer);
-	virtual void OnReceiveData(netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer);
+	virtual void OnReceiveData(netiolib::ScConnectorPtr& clisock, netiolib::Buffer& buffer);
 protected:
 	IScServer* _server;
 };
@@ -50,19 +48,16 @@ protected:
 inline void ScIo::OnConnected(netiolib::TcpSocketPtr& clisock) {
 	_server->OnConnected(clisock);
 }
-inline void ScIo::OnConnected(netiolib::TcpConnectorPtr& clisock, SocketLib::SocketError error) {
-	_server->OnConnected(clisock, error);
-}
 inline void ScIo::OnDisconnected(netiolib::TcpSocketPtr& clisock) {
 	_server->OnDisconnected(clisock);
 }
-inline void ScIo::OnDisconnected(netiolib::TcpConnectorPtr& clisock) {
+inline void ScIo::OnDisconnected(netiolib::ScConnectorPtr& clisock) {
 	_server->OnDisconnected(clisock);
 }
 inline void ScIo::OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer) {
 	_server->OnReceiveData(clisock, buffer);
 }
-inline void ScIo::OnReceiveData(netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer) {
+inline void ScIo::OnReceiveData(netiolib::ScConnectorPtr& clisock, netiolib::Buffer& buffer) {
 	_server->OnReceiveData(clisock, buffer);
 }
 
@@ -81,11 +76,10 @@ public:
 protected:
 	void Run(void*);
 	void OnConnected(netiolib::TcpSocketPtr& clisock);
-	void OnConnected(netiolib::TcpConnectorPtr& clisock, SocketLib::SocketError error);
 	void OnDisconnected(netiolib::TcpSocketPtr& clisock);
-	void OnDisconnected(netiolib::TcpConnectorPtr& clisock);
+	void OnDisconnected(netiolib::ScConnectorPtr& clisock);
 	void OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer);
-	void OnReceiveData(netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer);
+	void OnReceiveData(netiolib::ScConnectorPtr& clisock, netiolib::Buffer& buffer);
 	base::s_uint16_t UniqueId(const std::string& ip, unsigned short port);
 
 private:
@@ -158,21 +152,24 @@ inline void ScServer::OnConnected(netiolib::TcpSocketPtr& clisock) {
 	pscinfo->id = UniqueId(ip, port);
 	clisock->GetSocket().SetData(pscinfo);
 }
-inline void ScServer::OnConnected(netiolib::TcpConnectorPtr& clisock, SocketLib::SocketError error) {
-}
 
 inline void ScServer::OnDisconnected(netiolib::TcpSocketPtr& clisock) {
 	M_PRINT_DEBUG_LOG("ondisconnected......\n");
 	_ScInfo_* pscinfo = (_ScInfo_*)clisock->GetSocket().GetData();
 	delete pscinfo;
 }
-inline void ScServer::OnDisconnected(netiolib::TcpConnectorPtr& clisock) {
-	_CoScInfo_* info = (_CoScInfo_*)clisock->GetSocket().GetData();
-	if (info) {
-		info->buffer.Clear();
-		coroutine::Coroutine::resume(info->co_id);
-		delete info;
-	}
+
+inline void ScServer::OnDisconnected(netiolib::ScConnectorPtr& clisock) {
+	clisock->_mutex.lock();
+	int co_id = clisock->co_id;
+	int thr_id = clisock->thr_id;
+	clisock->co_id = -1;
+	clisock->thr_id = 0;
+	clisock->valid = false;
+	clisock->buffer.Clear();
+	clisock->_mutex.unlock();
+	if (co_id != -1)
+		coroutine::CoroutineTask::addResume(thr_id, co_id);
 }
 
 inline void ScServer::OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::Buffer& buffer) {
@@ -207,13 +204,15 @@ inline void ScServer::OnReceiveData(netiolib::TcpSocketPtr& clisock, netiolib::B
 		}
 	}
 }
-inline void ScServer::OnReceiveData(netiolib::TcpConnectorPtr& clisock, netiolib::Buffer& buffer) {
-	_CoScInfo_* info = (_CoScInfo_*)clisock->GetSocket().GetData();
-	if (info) {
-		info->buffer.Clear();
-		info->buffer.Swap(buffer);
-		coroutine::Coroutine::resume(info->co_id);
-	}
+
+inline void ScServer::OnReceiveData(netiolib::ScConnectorPtr& clisock, netiolib::Buffer& buffer) {
+	int co_id = clisock->co_id;
+	int thr_id = clisock->thr_id;
+	clisock->co_id = -1;
+	clisock->thr_id = 0;
+	clisock->buffer.Clear();
+	clisock->buffer.Swap(buffer);
+	coroutine::CoroutineTask::addResume(thr_id, co_id);
 }
 
 inline base::s_uint16_t ScServer::UniqueId(const std::string& ip, unsigned short port) {

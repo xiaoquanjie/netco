@@ -20,6 +20,7 @@ struct _ScInfo_ {
 	netiolib::Buffer buffer;
 };
 struct _CoScInfo_ {
+	base::s_uint32_t thr_id;
 	base::s_uint32_t co_id;
 	SocketLib::SocketError error;
 	netiolib::Buffer buffer;
